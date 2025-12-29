@@ -1,0 +1,38 @@
+{% extends "myapp/base.html" %}
+{% block content %}
+<h2>Admin Panel</h2>
+
+<section>
+  <h3>Add Slot</h3>
+  <form method="post">{% csrf_token %}
+    <input name="label" placeholder="Label e.g. C1" required>
+    <button class="btn" name="action" value="add">Add</button>
+  </form>
+</section>
+
+<section>
+  <h3>Slots</h3>
+  <table class="table">
+    <thead><tr><th>ID</th><th>Label</th><th>Status</th><th>Actions</th></tr></thead>
+    <tbody>
+      {% for s in slots %}
+      <tr>
+        <td>{{ s.id }}</td>
+        <td>{{ s.label }}</td>
+        <td>{{ s.is_free|yesno:"Free,Occupied" }}</td>
+        <td>
+          <form method="post" style="display:inline">{% csrf_token %}
+            <input type="hidden" name="slot_id" value="{{ s.id }}">
+            <button class="btn small" name="action" value="toggle">Toggle</button>
+          </form>
+          <form method="post" style="display:inline">{% csrf_token %}
+            <input type="hidden" name="slot_id" value="{{ s.id }}">
+            <button class="btn small danger" name="action" value="remove">Remove</button>
+          </form>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
+{% endblock %}

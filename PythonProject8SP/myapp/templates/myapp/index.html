@@ -1,0 +1,31 @@
+{% extends "myapp/base.html" %}
+{% load static %}
+{% block content %}
+<h2>Live Parking Map</h2>
+<div id="map-grid" class="grid">
+  {% for slot in slots %}
+    <div class="slot {% if slot.is_free %}free{% else %}occupied{% endif %}" data-id="{{ slot.id }}">
+      <div class="label">{{ slot.label }}</div>
+      <div class="status">{{ slot.is_free|yesno:"Free,Occupied" }}</div>
+      <div class="actions"><a href="{% url 'slot_detail' slot.id %}" class="btn small">Details</a></div>
+    </div>
+  {% endfor %}
+</div>
+
+<script>
+startPolling("{% url 'api_slots' %}", updateMap, 6000);
+function updateMap(slots){
+  const nodes = document.querySelectorAll('#map-grid .slot');
+  const map = {};
+  slots.forEach(s => map[s.id] = s);
+  nodes.forEach(n => {
+    const id = parseInt(n.dataset.id);
+    const s = map[id];
+    if(!s) return;
+    n.classList.toggle('free', s.is_free);
+    n.classList.toggle('occupied', !s.is_free);
+    n.querySelector('.status').textContent = s.is_free ? 'Free' : 'Occupied';
+  });
+}
+</script>
+{% endblock %}

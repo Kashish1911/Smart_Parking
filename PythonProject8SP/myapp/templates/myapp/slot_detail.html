@@ -1,0 +1,15 @@
+{% extends "myapp/base.html" %}
+{% block content %}
+<h2>Slot: {{ slot.label }}</h2>
+<p>Status: <strong>{{ slot.is_free|yesno:"Free,Occupied" }}</strong></p>
+
+{% if slot.is_free %}
+  <form method="post" action="{% url 'book_slot' slot.id %}">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button class="btn">Book This Slot</button>
+  </form>
+{% else %}
+  <p>This slot is currently occupied. Try another slot.</p>
+{% endif %}
+{% endblock %}
